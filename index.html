@@ -1,0 +1,945 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tài Khoản Chính Thức - Nhận Vé Ấp Trứng x40 | Poke Đại Chiến</title>
+    <meta name="description" content="Nhận ngay 40 Vé Ấp Trứng miễn phí cho tài khoản chính thức Poke Đại Chiến. Đăng nhập ngay để nhận quà xịn!">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========== RESET & BASE =========== */
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --sky-top: #5ec8f5;
+            --sky-mid: #a3dff7;
+            --sky-bot: #d6f0ff;
+            --gold: #ffd700;
+            --gold-dark: #e5a000;
+            --orange: #ff7a00;
+            --red-btn: #e53935;
+            --red-dark: #b71c1c;
+            --blue-btn: #1976d2;
+            --blue-dark: #0d47a1;
+            --cyan-btn: #00b4d8;
+            --cyan-dark: #0077b6;
+            --white: #ffffff;
+            --glass: rgba(255,255,255,0.18);
+            --glass-border: rgba(255,255,255,0.5);
+            --shadow: 0 8px 32px rgba(0,80,160,0.25);
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            min-height: 100vh;
+            background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-mid) 40%, var(--sky-bot) 100%);
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* =========== ANIMATED BACKGROUND =========== */
+        .bg-clouds {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+        }
+        .cloud {
+            position: absolute;
+            background: rgba(255,255,255,0.85);
+            border-radius: 50px;
+            filter: blur(2px);
+            animation: floatCloud linear infinite;
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute;
+            background: inherit; border-radius: 50%;
+        }
+        .cloud:nth-child(1) { width: 180px; height: 60px; top: 8%; animation-duration: 35s; animation-delay: 0s; }
+        .cloud:nth-child(1)::before { width: 90px; height: 70px; top: -35px; left: 30px; }
+        .cloud:nth-child(1)::after { width: 60px; height: 55px; top: -25px; left: 80px; }
+        .cloud:nth-child(2) { width: 130px; height: 45px; top: 18%; animation-duration: 28s; animation-delay: -10s; }
+        .cloud:nth-child(2)::before { width: 70px; height: 60px; top: -30px; left: 20px; }
+        .cloud:nth-child(3) { width: 220px; height: 70px; top: 5%; animation-duration: 42s; animation-delay: -20s; }
+        .cloud:nth-child(3)::before { width: 100px; height: 80px; top: -40px; left: 50px; }
+        .cloud:nth-child(4) { width: 100px; height: 35px; top: 25%; animation-duration: 22s; animation-delay: -5s; }
+        .cloud:nth-child(5) { width: 160px; height: 55px; top: 12%; animation-duration: 38s; animation-delay: -15s; }
+
+        @keyframes floatCloud {
+            from { transform: translateX(-300px); }
+            to { transform: translateX(calc(100vw + 300px)); }
+        }
+
+        /* =========== BALLOONS =========== */
+        .balloons { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .balloon {
+            position: absolute; bottom: -50px;
+            width: 22px; height: 28px;
+            border-radius: 50% 50% 50% 50% / 45% 45% 55% 55%;
+            animation: floatUp linear infinite;
+        }
+        .balloon::after {
+            content: ''; position: absolute;
+            width: 1px; height: 40px;
+            background: rgba(0,0,0,0.2);
+            bottom: -40px; left: 50%; transform: translateX(-50%);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateX(0) translateY(0); opacity: 1; }
+            50% { transform: translateX(20px) translateY(-50vh); }
+            100% { transform: translateX(-10px) translateY(-110vh); opacity: 0; }
+        }
+
+        /* =========== MAIN WRAPPER =========== */
+        #app {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+        }
+
+        /* =========== HEADER BANNER =========== */
+        .banner {
+            width: 100%; max-width: 900px;
+            padding: 32px 20px 0;
+            text-align: center;
+            position: relative;
+        }
+        .banner-title {
+            font-size: clamp(26px, 5vw, 48px);
+            font-weight: 900;
+            color: #fff;
+            text-shadow:
+                3px 3px 0 var(--orange),
+                6px 6px 0 rgba(200,80,0,0.4),
+                0 0 30px rgba(255,200,0,0.6);
+            letter-spacing: 1px;
+            line-height: 1.2;
+            animation: titlePulse 3s ease-in-out infinite;
+        }
+        .banner-title span {
+            color: var(--gold);
+            text-shadow:
+                2px 2px 0 var(--orange),
+                0 0 20px rgba(255,220,0,0.8);
+        }
+        @keyframes titlePulse {
+            0%, 100% { text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 rgba(200,80,0,0.4), 0 0 30px rgba(255,200,0,0.6); }
+            50% { text-shadow: 3px 3px 0 var(--orange), 6px 6px 0 rgba(200,80,0,0.4), 0 0 50px rgba(255,220,0,0.9); }
+        }
+        .banner-sub {
+            margin-top: 10px;
+            font-size: 16px; font-weight: 700;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,60,120,0.5);
+        }
+
+        /* =========== MAIN CARD =========== */
+        .main-card {
+            width: 100%; max-width: 520px;
+            margin: 24px 16px;
+            background: rgba(255,255,255,0.15);
+            border: 2px solid rgba(255,255,255,0.5);
+            border-radius: 24px;
+            padding: 32px 24px;
+            box-shadow: var(--shadow), inset 0 1px 0 rgba(255,255,255,0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            text-align: center;
+        }
+
+        /* =========== GIFT DISPLAY =========== */
+        .gift-box {
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            padding: 20px 32px;
+            background: rgba(255,255,255,0.25);
+            border: 2px solid rgba(255,255,255,0.6);
+            border-radius: 18px;
+            cursor: default;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .gift-box:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 30px rgba(0,80,200,0.2);
+        }
+        .gift-icon {
+            width: 90px; height: 90px;
+            display: block;
+            filter: drop-shadow(0 4px 12px rgba(255,180,0,0.6));
+            animation: floatItem 2.5s ease-in-out infinite;
+            overflow: visible;
+        }
+        @keyframes floatItem {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        .gift-label {
+            font-size: 15px; font-weight: 800;
+            color: #fff;
+            text-shadow: 0 1px 4px rgba(0,60,120,0.5);
+        }
+        .gift-badge {
+            background: linear-gradient(135deg, var(--gold), var(--orange));
+            color: #fff;
+            font-size: 13px; font-weight: 900;
+            padding: 3px 12px;
+            border-radius: 20px;
+            box-shadow: 0 2px 8px rgba(255,150,0,0.5);
+            letter-spacing: 0.5px;
+        }
+
+        /* =========== CLAIM BUTTON =========== */
+        .btn-claim {
+            margin-top: 22px;
+            width: 200px;
+            padding: 13px 0;
+            font-family: 'Nunito', sans-serif;
+            font-size: 17px; font-weight: 900;
+            color: #fff;
+            letter-spacing: 1px;
+            background: linear-gradient(180deg, #5bc8f5 0%, #1976d2 100%);
+            border: 3px solid rgba(255,255,255,0.6);
+            border-radius: 40px;
+            cursor: pointer;
+            box-shadow: 0 4px 0 #0d47a1, 0 8px 20px rgba(25,118,210,0.5);
+            transition: all 0.15s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .btn-claim::before {
+            content: '';
+            position: absolute; top: 0; left: -100%;
+            width: 60%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transition: left 0.5s ease;
+        }
+        .btn-claim:hover::before { left: 150%; }
+        .btn-claim:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #0d47a1, 0 12px 25px rgba(25,118,210,0.6); }
+        .btn-claim:active { transform: translateY(2px); box-shadow: 0 2px 0 #0d47a1; }
+        .btn-claim:disabled {
+            background: linear-gradient(180deg, #aaa 0%, #777 100%);
+            box-shadow: 0 4px 0 #555;
+            cursor: not-allowed;
+        }
+        .btn-claim.joined {
+            background: linear-gradient(180deg, #888 0%, #555 100%);
+            box-shadow: 0 4px 0 #333, 0 8px 20px rgba(0,0,0,0.3);
+        }
+
+        /* =========== USER INFO BAR =========== */
+        .user-bar {
+            margin-top: 20px;
+            display: flex; align-items: center; justify-content: center;
+            gap: 12px; flex-wrap: wrap;
+            padding: 10px 20px;
+            background: rgba(0,30,80,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 40px;
+            font-size: 14px; font-weight: 700;
+            color: #fff;
+        }
+        .user-bar .sep { opacity: 0.5; }
+        .btn-logout {
+            background: none; border: none;
+            color: #ffd700; font-size: 14px; font-weight: 800;
+            cursor: pointer; font-family: inherit;
+            text-decoration: underline;
+            transition: color 0.2s;
+        }
+        .btn-logout:hover { color: #fff; }
+
+        /* =========== OVERLAY =========== */
+        .overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 100;
+            background: rgba(0,30,80,0.6);
+            backdrop-filter: blur(4px);
+            align-items: center; justify-content: center;
+        }
+        .overlay.active { display: flex; }
+
+        /* =========== MODAL =========== */
+        .modal {
+            width: 340px; max-width: calc(100vw - 32px);
+            background: linear-gradient(160deg, #4db8f0 0%, #1565c0 100%);
+            border: 3px solid rgba(255,255,255,0.6);
+            border-radius: 24px;
+            padding: 32px 28px 28px;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,30,120,0.5);
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes popIn {
+            from { transform: scale(0.6); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .modal .btn-close {
+            position: absolute; top: -12px; right: -12px;
+            width: 34px; height: 34px;
+            background: radial-gradient(circle, #f44336, #b71c1c);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; color: #fff; font-weight: 900;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .modal .btn-close:hover { transform: scale(1.15) rotate(90deg); }
+
+        /* =========== LOGIN FORM =========== */
+        .form-group { margin-bottom: 14px; }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            background: rgba(255,255,255,0.92);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px; font-weight: 600;
+            color: #333;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .form-input:focus {
+            border-color: var(--gold);
+            box-shadow: 0 0 0 3px rgba(255,215,0,0.3);
+        }
+        .form-input::placeholder { color: #aaa; }
+
+        .btn-submit {
+            width: 100%; padding: 13px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 17px; font-weight: 900;
+            letter-spacing: 2px;
+            color: #fff;
+            border: none; border-radius: 40px; cursor: pointer;
+            margin-top: 4px;
+            position: relative; overflow: hidden;
+            transition: all 0.15s ease;
+        }
+        .btn-submit::before {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(transparent 50%, rgba(0,0,0,0.15) 100%);
+        }
+        .btn-login {
+            background: linear-gradient(180deg, #f44336 0%, #c62828 100%);
+            box-shadow: 0 4px 0 #8b0000, 0 6px 20px rgba(244,67,54,0.4);
+        }
+        .btn-login:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #8b0000, 0 10px 25px rgba(244,67,54,0.5); }
+        .btn-login:active { transform: translateY(2px); box-shadow: 0 2px 0 #8b0000; }
+
+        .btn-facebook {
+            background: linear-gradient(180deg, #4267B2 0%, #2d4e99 100%);
+            box-shadow: 0 4px 0 #1a3068, 0 6px 20px rgba(66,103,178,0.4);
+            margin-top: 10px;
+        }
+        .btn-facebook:hover { transform: translateY(-2px); }
+        .btn-facebook:active { transform: translateY(2px); }
+
+        .login-note {
+            margin-top: 14px;
+            font-size: 12px; font-weight: 600;
+            color: rgba(255,255,255,0.75);
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* =========== SERVER SELECT =========== */
+        .select-wrap {
+            position: relative; width: 100%;
+        }
+        .form-select {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: rgba(255,255,255,0.92);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 12px;
+            font-family: 'Nunito', sans-serif;
+            font-size: 15px; font-weight: 600;
+            color: #333;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+        }
+        .select-arrow {
+            position: absolute; right: 14px; top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: #666; font-size: 12px;
+        }
+
+        .btn-confirm {
+            background: linear-gradient(180deg, #f44336 0%, #c62828 100%);
+            box-shadow: 0 4px 0 #8b0000;
+        }
+        .btn-confirm:hover { transform: translateY(-2px); }
+
+        /* =========== TOAST / DIALOG =========== */
+        .toast-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 200;
+            background: rgba(0,20,60,0.55);
+            backdrop-filter: blur(3px);
+            align-items: center; justify-content: center;
+        }
+        .toast-overlay.active { display: flex; }
+
+        .toast-box {
+            width: 320px; max-width: calc(100vw - 32px);
+            background: linear-gradient(160deg, #4db8f0 0%, #1565c0 100%);
+            border: 3px solid rgba(255,255,255,0.6);
+            border-radius: 22px;
+            padding: 28px 24px 24px;
+            text-align: center;
+            position: relative;
+            animation: popIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 20px 60px rgba(0,30,120,0.5);
+        }
+        .toast-box .btn-close {
+            position: absolute; top: -12px; right: -12px;
+            width: 34px; height: 34px;
+            background: radial-gradient(circle, #f44336, #b71c1c);
+            border: 3px solid #fff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 16px; color: #fff; font-weight: 900;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s;
+        }
+        .toast-box .btn-close:hover { transform: scale(1.15) rotate(90deg); }
+        .toast-text {
+            font-size: 16px; font-weight: 700;
+            color: #fff;
+            line-height: 1.6;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+        .toast-icon { font-size: 40px; margin-bottom: 12px; }
+
+        /* =========== LOADING SPINNER =========== */
+        .spinner-overlay {
+            display: none;
+            position: fixed; inset: 0; z-index: 300;
+            background: rgba(0,20,60,0.5);
+            align-items: center; justify-content: center;
+        }
+        .spinner-overlay.active { display: flex; }
+        .spinner {
+            width: 56px; height: 56px;
+            border: 5px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* =========== FOOTER =========== */
+        .footer {
+            width: 100%; padding: 16px;
+            text-align: center;
+            font-size: 13px; font-weight: 600;
+            color: rgba(255,255,255,0.7);
+        }
+        .footer a { color: rgba(255,255,255,0.9); }
+
+        /* =========== RESPONSIVE =========== */
+        @media (max-width: 480px) {
+            .banner-title { font-size: 22px; }
+            .main-card { padding: 24px 16px; }
+            .btn-claim { width: 170px; font-size: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Animated Background -->
+<div class="bg-clouds" aria-hidden="true">
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+    <div class="cloud"></div>
+</div>
+<div class="balloons" id="balloons" aria-hidden="true"></div>
+
+<!-- Main App -->
+<div id="app">
+    <!-- Banner -->
+    <div class="banner">
+        <h1 class="banner-title">Tài Khoản Chính Thức <span>Quà Nâng Cấp Xịn</span></h1>
+        <p class="banner-sub" id="banner-sub">Mỗi tài khoản chính thức nhận <strong>40 Vé Ấp Trứng</strong>!</p>
+    </div>
+
+    <!-- Main Card -->
+    <div class="main-card">
+        <!-- Gift Display -->
+        <div class="gift-box">
+            <!-- Inline SVG Ticket Icon - no external image needed -->
+            <svg id="gift-icon" class="gift-icon" viewBox="0 0 90 90" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <radialGradient id="eggGrad" cx="40%" cy="35%" r="60%">
+                        <stop offset="0%" stop-color="#ffe066"/>
+                        <stop offset="50%" stop-color="#ffa500"/>
+                        <stop offset="100%" stop-color="#cc6600"/>
+                    </radialGradient>
+                    <radialGradient id="shineGrad" cx="35%" cy="30%" r="40%">
+                        <stop offset="0%" stop-color="rgba(255,255,255,0.8)"/>
+                        <stop offset="100%" stop-color="rgba(255,255,255,0)"/>
+                    </radialGradient>
+                    <filter id="glow">
+                        <feGaussianBlur stdDeviation="3" result="blur"/>
+                        <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                    </filter>
+                </defs>
+                <!-- Ticket/Book base -->
+                <rect x="10" y="15" width="70" height="60" rx="8" ry="8" fill="url(#eggGrad)" filter="url(#glow)"/>
+                <rect x="10" y="15" width="70" height="60" rx="8" ry="8" fill="url(#shineGrad)"/>
+                <!-- Ticket border -->
+                <rect x="10" y="15" width="70" height="60" rx="8" ry="8" fill="none" stroke="#cc6600" stroke-width="2"/>
+                <!-- Notch left -->
+                <circle cx="10" cy="45" r="7" fill="#4db8f0"/>
+                <!-- Notch right -->
+                <circle cx="80" cy="45" r="7" fill="#4db8f0"/>
+                <!-- Dashed center line -->
+                <line x1="17" y1="45" x2="73" y2="45" stroke="#cc6600" stroke-width="1.5" stroke-dasharray="4 3" opacity="0.6"/>
+                <!-- Egg symbol -->
+                <ellipse cx="45" cy="38" rx="13" ry="16" fill="white" opacity="0.95"/>
+                <ellipse cx="45" cy="38" rx="13" ry="16" fill="none" stroke="#e0a020" stroke-width="1.5"/>
+                <!-- Shine on egg -->
+                <ellipse cx="40" cy="31" rx="5" ry="3" fill="rgba(255,255,255,0.7)" transform="rotate(-20,40,31)"/>
+                <!-- Stars decoration -->
+                <text x="20" y="72" font-size="10" fill="#fff" opacity="0.9">✦</text>
+                <text x="62" y="72" font-size="10" fill="#fff" opacity="0.9">✦</text>
+                <text x="41" y="76" font-size="8" fill="#fff" opacity="0.7">✦</text>
+            </svg>
+            <div class="gift-label" id="gift-label">Vé Ấp Trứng</div>
+            <div class="gift-badge" id="gift-badge">×40</div>
+        </div>
+
+        <!-- Claim Button -->
+        <div>
+            <button class="btn-claim" id="btn-main" onclick="handleMainBtn()">Nhận quà</button>
+        </div>
+
+        <!-- User Info (shown after login) -->
+        <div class="user-bar" id="user-bar" style="display:none">
+            <span>Server: <strong id="ui-server">—</strong></span>
+            <span class="sep">|</span>
+            <span>Nhân vật: <strong id="ui-player">—</strong></span>
+            <span>❤️</span>
+            <button class="btn-logout" onclick="doLogout()">[ Thoát ]</button>
+        </div>
+    </div>
+
+    <div class="footer">
+        <a href="https://www.facebook.com/pokedaichien/" target="_blank">Fanpage Poke Đại Chiến</a>
+        &nbsp;•&nbsp; Nâng cấp tài khoản trong game: Avatar → Cài đặt → Trung tâm cá nhân
+    </div>
+</div>
+
+<!-- ============ LOGIN MODAL ============ -->
+<div class="overlay" id="overlay-login">
+    <div class="modal">
+        <button class="btn-close" onclick="closeLogin()" aria-label="Đóng">✕</button>
+
+        <!-- Step 1: Username/Password -->
+        <div id="step-login" style="display:block">
+            <div class="form-group">
+                <input class="form-input" id="inp-user" type="text" placeholder="Tài khoản" autocomplete="username" autofocus>
+            </div>
+            <div class="form-group">
+                <input class="form-input" id="inp-pass" type="password" placeholder="Mật khẩu" autocomplete="current-password"
+                    onkeydown="if(event.key==='Enter')doSdkLogin()">
+            </div>
+            <button class="btn-submit btn-login" onclick="doSdkLogin()">ĐĂNG NHẬP</button>
+            <button class="btn-submit btn-facebook" onclick="doFbLogin()">FACEBOOK</button>
+            <p class="login-note">Người chơi dùng tài khoản khách không thể đăng nhập, vui lòng liên hệ CSKH để nâng cấp thành tài khoản chính thức!</p>
+        </div>
+
+        <!-- Step 2: Server select -->
+        <div id="step-server" style="display:none">
+            <div class="form-group">
+                <div class="select-wrap">
+                    <select class="form-select" id="sel-server">
+                        <option value="">Chọn Server</option>
+                    </select>
+                    <span class="select-arrow">▼</span>
+                </div>
+            </div>
+            <button class="btn-submit btn-confirm" onclick="doConfirmServer()">XÁC NHẬN</button>
+        </div>
+    </div>
+</div>
+
+<!-- ============ TOAST ============ -->
+<div class="toast-overlay" id="toast-overlay">
+    <div class="toast-box">
+        <button class="btn-close" onclick="closeToast()" aria-label="Đóng">✕</button>
+        <div class="toast-icon" id="toast-icon">ℹ️</div>
+        <div class="toast-text" id="toast-text"></div>
+    </div>
+</div>
+
+<!-- ============ SPINNER ============ -->
+<div class="spinner-overlay" id="spinner-overlay" aria-label="Đang tải...">
+    <div class="spinner"></div>
+</div>
+
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+const API_BASE = 'http://localhost:3000/api';   // Backend URL
+
+// State
+let state = {
+    token: localStorage.getItem('token') || '',
+    userId: localStorage.getItem('userId') || '',
+    playerName: localStorage.getItem('playerName') || '',
+    playerId: localStorage.getItem('playerId') || '',
+    zoneName: localStorage.getItem('zoneName') || '',
+    gameZoneId: localStorage.getItem('gameZoneId') || '',
+    zones: [],
+    isJoined: false,
+    giftAmount: 40
+};
+
+// ============================================================
+//  BALLOONS ANIMATION
+// ============================================================
+(function spawnBalloons() {
+    const colors = ['#ff6b6b','#ffd93d','#6bcb77','#4d96ff','#ff922b','#cc5de8','#f06595','#74c0fc'];
+    const container = document.getElementById('balloons');
+    function make() {
+        const b = document.createElement('div');
+        b.className = 'balloon';
+        b.style.cssText = `
+            left:${Math.random()*100}%;
+            background:${colors[Math.floor(Math.random()*colors.length)]};
+            width:${16+Math.random()*14}px;
+            height:${20+Math.random()*16}px;
+            animation-duration:${8+Math.random()*10}s;
+            animation-delay:${Math.random()*10}s;
+        `;
+        container.appendChild(b);
+        setTimeout(() => b.remove(), 22000);
+    }
+    for (let i = 0; i < 12; i++) setTimeout(make, i * 1000);
+    setInterval(make, 2500);
+})();
+
+// ============================================================
+//  UTILS
+// ============================================================
+function showSpinner() { document.getElementById('spinner-overlay').classList.add('active'); }
+function hideSpinner() { document.getElementById('spinner-overlay').classList.remove('active'); }
+
+function showToast(msg, icon = 'ℹ️') {
+    document.getElementById('toast-icon').textContent = icon;
+    document.getElementById('toast-text').textContent = msg;
+    document.getElementById('toast-overlay').classList.add('active');
+}
+function closeToast() { document.getElementById('toast-overlay').classList.remove('active'); }
+
+function showLogin() { document.getElementById('overlay-login').classList.add('active'); }
+function closeLogin() {
+    document.getElementById('overlay-login').classList.remove('active');
+    document.getElementById('step-login').style.display = 'block';
+    document.getElementById('step-server').style.display = 'none';
+    document.getElementById('inp-user').value = '';
+    document.getElementById('inp-pass').value = '';
+}
+
+function isLoggedIn() { return !!(state.token && state.playerId); }
+
+// ============================================================
+//  API CALLS
+// ============================================================
+async function apiCall(path, method='GET', body=null) {
+    const opts = {
+        method,
+        headers: { 'Content-Type': 'application/json' }
+    };
+    if (body) opts.body = JSON.stringify(body);
+
+    let url = API_BASE + path;
+    if (method === 'GET' && body) {
+        const qs = new URLSearchParams(body).toString();
+        url += '?' + qs;
+        delete opts.body;
+        opts.headers = {};
+    }
+    const resp = await fetch(url, opts);
+    return resp.json();
+}
+
+// ============================================================
+//  LOAD GIFT INFO FROM BACKEND
+// ============================================================
+async function loadGiftInfo() {
+    try {
+        const r = await apiCall('/gift-info');
+        if (r.success) {
+            state.giftAmount = r.data.giftAmount;
+            document.getElementById('gift-badge').textContent = '×' + r.data.giftAmount;
+            document.getElementById('gift-label').textContent = 'Vé Ấp Trứng';
+            document.getElementById('banner-sub').innerHTML =
+                `Mỗi tài khoản chính thức nhận <strong>${r.data.giftAmount} Vé Ấp Trứng</strong>!`;
+        }
+    } catch(e) {
+        console.warn('[gift-info]', e.message);
+    }
+}
+
+// ============================================================
+//  INIT
+// ============================================================
+async function init() {
+    await loadGiftInfo();
+
+    if (isLoggedIn()) {
+        renderUserBar();
+        await checkAlreadyClaimed();
+    }
+}
+
+function renderUserBar() {
+    document.getElementById('ui-server').textContent = state.zoneName || '?';
+    document.getElementById('ui-player').textContent = state.playerName || '?';
+    document.getElementById('user-bar').style.display = 'flex';
+}
+
+async function checkAlreadyClaimed() {
+    // Lightly try to get reward status (if server returns 1005 = already claimed)
+    // We just use local flag for now
+    const claimed = localStorage.getItem('claimed_' + state.userId + '_' + state.gameZoneId);
+    if (claimed) {
+        setJoined();
+    }
+}
+
+function setJoined() {
+    state.isJoined = true;
+    const btn = document.getElementById('btn-main');
+    btn.textContent = 'Đã nhận quà ✓';
+    btn.disabled = true;
+    btn.classList.add('joined');
+}
+
+// ============================================================
+//  MAIN BUTTON
+// ============================================================
+function handleMainBtn() {
+    if (!isLoggedIn()) {
+        showLogin();
+    } else if (!state.isJoined) {
+        doClaimGift();
+    }
+}
+
+// ============================================================
+//  SDK LOGIN
+// ============================================================
+async function doSdkLogin() {
+    const userName = document.getElementById('inp-user').value.trim();
+    const password = document.getElementById('inp-pass').value.trim();
+    if (!userName || !password) {
+        showToast('Vui lòng nhập tài khoản và mật khẩu!', '⚠️');
+        return;
+    }
+
+    showSpinner();
+    try {
+        const r = await apiCall('/login', 'POST', { userName, password });
+        hideSpinner();
+        if (r.success) {
+            await afterLogin(r.data);
+        } else {
+            showToast(r.message || 'Đăng nhập thất bại!', '❌');
+        }
+    } catch(e) {
+        hideSpinner();
+        showToast('Không thể kết nối server. Hãy chắc chắn backend đang chạy!', '❌');
+    }
+}
+
+// ============================================================
+//  FACEBOOK LOGIN
+// ============================================================
+function doFbLogin() {
+    if (typeof FB === 'undefined') {
+        showToast('Facebook SDK chưa sẵn sàng, thử lại sau!', '⚠️');
+        return;
+    }
+    FB.getLoginStatus(function(resp) {
+        if (resp.status === 'connected') {
+            fbLoginWithToken(resp.authResponse.accessToken);
+        } else {
+            FB.login(function(resp) {
+                if (resp.status === 'connected') {
+                    fbLoginWithToken(resp.authResponse.accessToken);
+                }
+            });
+        }
+    });
+}
+
+async function fbLoginWithToken(accessToken) {
+    showSpinner();
+    try {
+        const r = await apiCall('/login/facebook', 'POST', { accessToken });
+        hideSpinner();
+        if (r.success) {
+            await afterLogin(r.data);
+        } else {
+            showToast(r.message || 'Đăng nhập Facebook thất bại!', '❌');
+        }
+    } catch(e) {
+        hideSpinner();
+        showToast('Lỗi kết nối server!', '❌');
+    }
+}
+
+// ============================================================
+//  AFTER LOGIN -> FETCH ZONES
+// ============================================================
+async function afterLogin(loginData) {
+    state.token = loginData.token;
+    state.userId = loginData.userId;
+    if (loginData.type) localStorage.setItem('loginType', loginData.type);
+    localStorage.setItem('token', state.token);
+    localStorage.setItem('userId', state.userId);
+
+    showSpinner();
+    try {
+        const r = await apiCall('/zones', 'GET', { token: state.token });
+        hideSpinner();
+        if (r.success && r.data && r.data.length > 0) {
+            state.zones = r.data;
+            // Populate select
+            const sel = document.getElementById('sel-server');
+            sel.innerHTML = '<option value="">Chọn Server</option>';
+            r.data.forEach((z, idx) => {
+                const opt = document.createElement('option');
+                opt.value = idx;
+                opt.textContent = z.localName || z.gameZoneId;
+                sel.appendChild(opt);
+            });
+            // Show server step
+            document.getElementById('step-login').style.display = 'none';
+            document.getElementById('step-server').style.display = 'block';
+        } else {
+            showToast(r.message || 'Không lấy được danh sách server!', '❌');
+        }
+    } catch(e) {
+        hideSpinner();
+        showToast('Lỗi kết nối server!', '❌');
+    }
+}
+
+// ============================================================
+//  CONFIRM SERVER -> FETCH PLAYERS
+// ============================================================
+async function doConfirmServer() {
+    const selIdx = document.getElementById('sel-server').value;
+    if (selIdx === '') {
+        showToast('Vui lòng chọn Server!', '⚠️');
+        return;
+    }
+
+    const zone = state.zones[parseInt(selIdx)];
+    showSpinner();
+    try {
+        const r = await apiCall('/players', 'GET', {
+            token: state.token,
+            gameZoneId: zone.gameZoneId
+        });
+        hideSpinner();
+        if (r.success && r.data && r.data.length > 0) {
+            const player = r.data[0]; // First player
+            state.playerName = player.playerName;
+            state.playerId = player.playerId;
+            state.zoneName = document.getElementById('sel-server').options[document.getElementById('sel-server').selectedIndex].text;
+            state.gameZoneId = zone.gameZoneId;
+
+            localStorage.setItem('playerName', state.playerName);
+            localStorage.setItem('playerId', state.playerId);
+            localStorage.setItem('zoneName', state.zoneName);
+            localStorage.setItem('gameZoneId', state.gameZoneId);
+
+            closeLogin();
+            renderUserBar();
+            await checkAlreadyClaimed();
+        } else {
+            showToast(r.message || 'Không có nhân vật tại server này!', '⚠️');
+        }
+    } catch(e) {
+        hideSpinner();
+        showToast('Lỗi kết nối server!', '❌');
+    }
+}
+
+// ============================================================
+//  CLAIM GIFT
+// ============================================================
+async function doClaimGift() {
+    if (!isLoggedIn()) { showLogin(); return; }
+
+    showSpinner();
+    try {
+        const r = await apiCall('/claim', 'POST', {
+            token: state.token,
+            playerId: state.playerId,
+            gameZoneId: state.gameZoneId
+        });
+        hideSpinner();
+        if (r.success) {
+            localStorage.setItem('claimed_' + state.userId + '_' + state.gameZoneId, '1');
+            setJoined();
+            showToast(r.data.message || `Chúc mừng! Bạn đã nhận ${state.giftAmount} Vé Ấp Trứng! Hãy đăng nhập game để nhận!`, '🎉');
+        } else if (r.code === 1005) {
+            setJoined();
+            showToast('Bạn đã nhận quà này rồi!', '✅');
+        } else if (r.code === 300) {
+            // Token expired
+            localStorage.clear();
+            showToast('Phiên đăng nhập hết hạn. Trang sẽ tự làm mới sau 3 giây!', '⏰');
+            setTimeout(() => location.reload(), 3000);
+        } else {
+            showToast(r.message || 'Nhận quà thất bại!', '❌');
+        }
+    } catch(e) {
+        hideSpinner();
+        showToast('Không thể kết nối server. Hãy chắc chắn backend đang chạy!', '❌');
+    }
+}
+
+// ============================================================
+//  LOGOUT
+// ============================================================
+function doLogout() {
+    localStorage.clear();
+    location.reload();
+}
+
+// ============================================================
+//  FACEBOOK SDK INIT
+// ============================================================
+window.fbAsyncInit = function() {
+    FB.init({ appId: '1162312071472038', autoLogAppEvents: true, xfbml: true, version: 'v4.0' });
+};
+(function(d, s, id) {
+    if (d.getElementById(id)) return;
+    var js = d.createElement(s); js.id = id;
+    js.src = 'https://connect.facebook.net/en_US/sdk.js';
+    d.getElementsByTagName(s)[0].parentNode.insertBefore(js, d.getElementsByTagName(s)[0]);
+})(document, 'script', 'facebook-jssdk');
+
+// ============================================================
+//  BOOT
+// ============================================================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
