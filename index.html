@@ -677,7 +677,20 @@ async function apiCall(path, method='GET', body=null) {
     try {
         opts.signal = controller.signal;
         const resp = await fetch(url, opts);
-        return await resp.json();
+        const contentType = resp.headers.get('content-type') || '';
+        const payload = contentType.includes('application/json')
+            ? await resp.json()
+            : { success: false, message: await resp.text() };
+
+        if (!resp.ok && payload && typeof payload === 'object') {
+            return {
+                success: false,
+                code: resp.status,
+                message: payload.message || payload.error || `HTTP ${resp.status}`
+            };
+        }
+
+        return payload;
     } finally {
         clearTimeout(timeoutId);
     }
@@ -766,11 +779,13 @@ async function doSdkLogin() {
         if (r.success) {
             await afterLogin(r.data);
         } else {
-            showToast(r.message || 'Đăng nhập thất bại!', '❌');
+            showToast(r.message || `Đăng nhập thất bại (mã ${r.code || 'unknown'})!`, '❌');
         }
     } catch(e) {
         hideSpinner();
-        showToast('Không thể kết nối server. Hãy chắc chắn backend đang chạy!', '❌');
+        showToast(e.name === 'AbortError'
+            ? 'Backend phản hồi quá lâu, thử lại sau vài giây.'
+            : 'Không thể kết nối server. Hãy chắc chắn backend đang chạy!', '❌');
     }
 }
 
@@ -804,11 +819,13 @@ async function fbLoginWithToken(accessToken) {
         if (r.success) {
             await afterLogin(r.data);
         } else {
-            showToast(r.message || 'Đăng nhập Facebook thất bại!', '❌');
+            showToast(r.message || `Đăng nhập Facebook thất bại (mã ${r.code || 'unknown'})!`, '❌');
         }
     } catch(e) {
         hideSpinner();
-        showToast('Lỗi kết nối server!', '❌');
+        showToast(e.name === 'AbortError'
+            ? 'Backend phản hồi quá lâu, thử lại sau vài giây.'
+            : 'Lỗi kết nối server!', '❌');
     }
 }
 
