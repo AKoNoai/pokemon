@@ -658,7 +658,7 @@ function isLoggedIn() { return !!(state.token && state.playerId); }
 // ============================================================
 //  API CALLS
 // ============================================================
-async function apiCall(path, method='GET', body=null) {
+async function apiCall(path, method='GET', body=null, timeoutMs=30000) {
     const opts = {
         method,
         headers: { 'Content-Type': 'application/json' }
@@ -673,7 +673,7 @@ async function apiCall(path, method='GET', body=null) {
         opts.headers = {};
     }
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
     try {
         opts.signal = controller.signal;
         const resp = await fetch(url, opts);
@@ -774,7 +774,7 @@ async function doSdkLogin() {
     showSpinner();
     try {
         document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang đăng nhập...');
-        const r = await apiCall('/login', 'POST', { userName, password });
+        const r = await apiCall('/login', 'POST', { userName, password }, 30000);
         hideSpinner();
         if (r.success) {
             await afterLogin(r.data);
@@ -814,7 +814,7 @@ async function fbLoginWithToken(accessToken) {
     showSpinner();
     try {
         document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang đăng nhập Facebook...');
-        const r = await apiCall('/login/facebook', 'POST', { accessToken });
+        const r = await apiCall('/login/facebook', 'POST', { accessToken }, 30000);
         hideSpinner();
         if (r.success) {
             await afterLogin(r.data);
@@ -842,7 +842,7 @@ async function afterLogin(loginData) {
     showSpinner();
     try {
         document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang tải danh sách server...');
-        const r = await apiCall('/zones', 'GET', { token: state.token });
+        const r = await apiCall('/zones', 'GET', { token: state.token }, 30000);
         hideSpinner();
         if (r.success && r.data && r.data.length > 0) {
             state.zones = r.data;
@@ -883,7 +883,7 @@ async function doConfirmServer() {
         const r = await apiCall('/players', 'GET', {
             token: state.token,
             gameZoneId: zone.gameZoneId
-        });
+        }, 30000);
         hideSpinner();
         if (r.success && r.data && r.data.length > 0) {
             const player = r.data[0]; // First player
@@ -921,7 +921,7 @@ async function doClaimGift() {
             token: state.token,
             playerId: state.playerId,
             gameZoneId: state.gameZoneId
-        });
+        }, 30000);
         hideSpinner();
         if (r.success) {
             localStorage.setItem('claimed_' + state.userId + '_' + state.gameZoneId, '1');
