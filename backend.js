@@ -19,6 +19,7 @@ const GROUP_ID = '5f682ae8b5cb673c9ca740ed';
 const ACT_ID = '5f682ae8b5cb673c9ca740ee';
 const REWARD_ID = '5f682ae8b5cb673c9ca740f0';
 const GIFT_AMOUNT = 40; // Changed from 20 to 40
+const GAME_REQUEST_TIMEOUT = 8000;
 
 // ===================== MIDDLEWARE =====================
 app.use(cors({ origin: '*' }));
@@ -39,7 +40,7 @@ async function gameRequest(url, params) {
     try {
         const resp = await axios.get(url, {
             params,
-            timeout: 15000,
+            timeout: GAME_REQUEST_TIMEOUT,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
                 'Accept': 'application/json, text/plain, */*',

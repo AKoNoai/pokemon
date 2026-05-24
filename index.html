@@ -672,8 +672,15 @@ async function apiCall(path, method='GET', body=null) {
         delete opts.body;
         opts.headers = {};
     }
-    const resp = await fetch(url, opts);
-    return resp.json();
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000);
+    try {
+        opts.signal = controller.signal;
+        const resp = await fetch(url, opts);
+        return await resp.json();
+    } finally {
+        clearTimeout(timeoutId);
+    }
 }
 
 // ============================================================
@@ -753,6 +760,7 @@ async function doSdkLogin() {
 
     showSpinner();
     try {
+        document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang đăng nhập...');
         const r = await apiCall('/login', 'POST', { userName, password });
         hideSpinner();
         if (r.success) {
@@ -790,6 +798,7 @@ function doFbLogin() {
 async function fbLoginWithToken(accessToken) {
     showSpinner();
     try {
+        document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang đăng nhập Facebook...');
         const r = await apiCall('/login/facebook', 'POST', { accessToken });
         hideSpinner();
         if (r.success) {
@@ -815,6 +824,7 @@ async function afterLogin(loginData) {
 
     showSpinner();
     try {
+        document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang tải danh sách server...');
         const r = await apiCall('/zones', 'GET', { token: state.token });
         hideSpinner();
         if (r.success && r.data && r.data.length > 0) {
