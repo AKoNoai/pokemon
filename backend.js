@@ -17,7 +17,7 @@ const GAME_API = 'https://activity.pocketgamesol.com';
 const APP_ID = '10062';
 const GROUP_ID = '5f682ae8b5cb673c9ca740ed';
 const ACT_ID = '5f682ae8b5cb673c9ca740ee';
-const REWARD_ID = '5f682ae8b5cb673c9ca740ef';
+const REWARD_ID = '5f682ae8b5cb673c9ca740f0';
 const GIFT_AMOUNT = 40; // Changed from 20 to 40
 
 // ===================== MIDDLEWARE =====================
@@ -221,7 +221,7 @@ app.post('/api/claim', async (req, res) => {
         let invalidResult = null;
 
         // Probe offsets from -5 to +5 to cover different potential reward IDs
-        for (let i = -5; i <= 5; i++) {
+        for (let i = 0; i <= 10; i++) {
             const currentVal = suffixVal + i;
             const currentHex = currentVal.toString(16).padStart(6, '0');
             const probeId = prefix + currentHex;
@@ -366,10 +366,12 @@ app.get('/api/gift-info', (req, res) => {
 });
 
 // ===================== START =====================
-app.listen(PORT, () => {
-    console.log(`\n🎮 Poke Gift Server đang chạy tại http://localhost:${PORT}`);
-    console.log(`📦 Gift: Vé Ấp Trứng x${GIFT_AMOUNT} (đã nâng từ 20 lên ${GIFT_AMOUNT})`);
-    console.log(`🌐 Frontend: http://localhost:${PORT}/index.html\n`);
-});
+if (require.main === module) {
+    app.listen(PORT, () => {
+        console.log(`\n🎮 Poke Gift Server đang chạy tại http://localhost:${PORT}`);
+        console.log(`📦 Gift: Vé Ấp Trứng x${GIFT_AMOUNT} (đã nâng từ 20 lên ${GIFT_AMOUNT})`);
+        console.log(`🌐 Frontend: http://localhost:${PORT}/index.html\n`);
+    });
+}
 
 module.exports = app;
