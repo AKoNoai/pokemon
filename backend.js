@@ -19,7 +19,7 @@ const GROUP_ID = '5f682ae8b5cb673c9ca740ed';
 const ACT_ID = '5f682ae8b5cb673c9ca740ee';
 const REWARD_ID = '5f682ae8b5cb673c9ca740f0';
 const GIFT_AMOUNT = 40; // Changed from 20 to 40
-const GAME_REQUEST_TIMEOUT = 25000;
+const GAME_REQUEST_TIMEOUT = 9000;
 
 // ===================== MIDDLEWARE =====================
 app.use(cors({ origin: '*' }));
@@ -73,6 +73,7 @@ async function gameRequest(url, params) {
  * Health check
  */
 app.get('/api/status', (req, res) => {
+    console.log('[status] Health check');
     apiOk(res, {
         server: 'Poke Gift Server',
         version: '2.0',
@@ -82,37 +83,57 @@ app.get('/api/status', (req, res) => {
 });
 
 /**
+ * GET /api/health
+ * Quick health check (no external calls)
+ */
+app.get('/api/health', (req, res) => {
+    console.log('[health] Quick health check');
+    res.json({ ok: true, timestamp: Date.now() });
+});
+
+/**
  * POST /api/login
  * SDK Login with username & password
  * Body: { userName, password }
  */
 app.post('/api/login', async (req, res) => {
     const { userName, password } = req.body;
+    const startTime = Date.now();
+    console.log(`[login] START for user: ${userName}`);
 
     if (!userName || !password) {
+        console.log('[login] Missing credentials');
         return apiError(res, 400, 'Vui lòng nhập tài khoản và mật khẩu');
     }
 
     try {
         const pwdMd5 = md5(password);
         const sign = md5(userName + pwdMd5 + 'v3_pokectgame_login');
-
+        
+        console.log(`[login] Calling game API for user ${userName}`);
+        const gameCallStart = Date.now();
         const result = await gameRequest(GAME_API + '/user/sdk/login', {
             userName,
             password: pwdMd5,
             version: 'v3',
             sign
         });
+        const gameCallMs = Date.now() - gameCallStart;
+        console.log(`[login] Game API responded in ${gameCallMs}ms with code: ${result.code}`);
 
         if (result.code === 200) {
+            console.log(`[login] SUCCESS in ${Date.now() - startTime}ms`);
             return apiOk(res, result.state);
         } else if (result.code === 102) {
+            console.log(`[login] Invalid credentials for ${userName}`);
             return apiError(res, 102, 'Tài khoản không tồn tại hoặc sai mật khẩu');
         } else {
+            console.log(`[login] API returned error code ${result.code}`);
             return apiError(res, result.code, result.state || 'Đăng nhập thất bại');
         }
     } catch (err) {
-        console.error('[login]', err.message);
+        const totalMs = Date.now() - startTime;
+        console.error(`[login] ERROR after ${totalMs}ms:`, err.message);
         return apiError(res, 500, 'Lỗi server, thử lại sau');
     }
 });

@@ -673,10 +673,17 @@ async function apiCall(path, method='GET', body=null, timeoutMs=30000) {
         opts.headers = {};
     }
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+    let responded = false;
+    const timeoutId = setTimeout(() => {
+        if (!responded) controller.abort();
+    }, timeoutMs);
+    
     try {
         opts.signal = controller.signal;
         const resp = await fetch(url, opts);
+        responded = true;
+        clearTimeout(timeoutId);
+        
         const contentType = resp.headers.get('content-type') || '';
         const payload = contentType.includes('application/json')
             ? await resp.json()
@@ -701,16 +708,18 @@ async function apiCall(path, method='GET', body=null, timeoutMs=30000) {
 // ============================================================
 async function loadGiftInfo() {
     try {
-        const r = await apiCall('/gift-info');
-        if (r.success) {
+        const r = await apiCall('/gift-info', 'GET', null, 8000);
+        if (r && r.success && r.data) {
             state.giftAmount = r.data.giftAmount;
-            document.getElementById('gift-badge').textContent = '×' + r.data.giftAmount;
-            document.getElementById('gift-label').textContent = 'Vé Ấp Trứng';
-            document.getElementById('banner-sub').innerHTML =
-                `Mỗi tài khoản chính thức nhận <strong>${r.data.giftAmount} Vé Ấp Trứng</strong>!`;
+            const badge = document.getElementById('gift-badge');
+            const label = document.getElementById('gift-label');
+            const sub = document.getElementById('banner-sub');
+            if (badge) badge.textContent = '×' + r.data.giftAmount;
+            if (label) label.textContent = 'Vé Ấp Trứng';
+            if (sub) sub.innerHTML = `Mỗi tài khoản chính thức nhận <strong>${r.data.giftAmount} Vé Ấp Trứng</strong>!`;
         }
     } catch(e) {
-        console.warn('[gift-info]', e.message);
+        console.warn('[gift-info] Skipped (not critical):', e.message || e);
     }
 }
 
@@ -718,7 +727,8 @@ async function loadGiftInfo() {
 //  INIT
 // ============================================================
 async function init() {
-    await loadGiftInfo();
+    // Load gift info async, don't block page load
+    loadGiftInfo().catch(e => console.warn('Gift info load failed:', e));
 
     if (isLoggedIn()) {
         renderUserBar();
@@ -772,20 +782,42 @@ async function doSdkLogin() {
     }
 
     showSpinner();
-    try {
-        document.getElementById('spinner-overlay').setAttribute('aria-label', 'Đang đăng nhập...');
-        const r = await apiCall('/login', 'POST', { userName, password }, 30000);
-        hideSpinner();
-        if (r.success) {
-            await afterLogin(r.data);
-        } else {
-            showToast(r.message || `Đăng nhập thất bại (mã ${r.code || 'unknown'})!`, '❌');
+    let lastError = null;
+    const maxRetries = 3;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+        try {
+            console.log(`[doSdkLogin] Attempt ${attempt}/${maxRetries}`);
+            document.getElementById('spinner-overlay').setAttribute('aria-label', `Đang đăng nhập (lần ${attempt})...`);
+            const r = await apiCall('/login', 'POST', { userName, password }, 35000);
+            hideSpinner();
+            if (r.success) {
+                await afterLogin(r.data);
+                return;
+            } else {
+                showToast(r.message || `Đăng nhập thất bại (mã ${r.code || 'unknown'})!`, '❌');
+                return;
+            }
+        } catch(e) {
+            lastError = e;
+            console.error(`[doSdkLogin] Attempt ${attempt} failed:`, e.message);
+            if (attempt < maxRetries && e.name === 'AbortError') {
+                const waitTime = attempt === 1 ? 2000 : 3000; // 2s, then 3s
+                console.log(`[doSdkLogin] Waiting ${waitTime}ms before retry...`);
+                await new Promise(resolve => setTimeout(resolve, waitTime));
+            } else {
+                break;
+            }
         }
-    } catch(e) {
-        hideSpinner();
-        showToast(e.name === 'AbortError'
-            ? 'Backend phản hồi quá lâu, thử lại sau vài giây.'
-            : 'Không thể kết nối server. Hãy chắc chắn backend đang chạy!', '❌');
+    }
+
+    hideSpinner();
+    if (lastError && lastError.name === 'AbortError') {
+        showToast('API game đang bị tải cao. Thử lại sau 3-5 phút khi server game ít bận.', '⏱️');
+    } else if (lastError && lastError.message && lastError.message.includes('Failed to fetch')) {
+        showToast('Không thể kết nối Vercel. Kiểm tra kết nối internet.', '❌');
+    } else {
+        showToast('Lỗi đăng nhập: ' + (lastError?.message || 'unknown'), '❌');
     }
 }
 
