@@ -708,7 +708,7 @@ async function apiCall(path, method='GET', body=null, timeoutMs=30000) {
 // ============================================================
 async function loadGiftInfo() {
     try {
-        const r = await apiCall('/gift-info', 'GET', null, 8000);
+        const r = await apiCall('/gift-info', 'GET', null, 15000);
         if (r && r.success && r.data) {
             state.giftAmount = r.data.giftAmount;
             const badge = document.getElementById('gift-badge');
@@ -724,10 +724,23 @@ async function loadGiftInfo() {
 }
 
 // ============================================================
+//  WARMUP - đánh thức Vercel cold start
+// ============================================================
+async function warmupBackend() {
+    try {
+        await apiCall('/health', 'GET', null, 15000);
+        console.log('[warmup] Backend ready');
+    } catch(e) {
+        console.warn('[warmup] Backend not ready:', e.message);
+    }
+}
+
+// ============================================================
 //  INIT
 // ============================================================
 async function init() {
-    // Load gift info async, don't block page load
+    // Warmup backend song song với gift-info để tránh cold start khi user đăng nhập
+    warmupBackend();
     loadGiftInfo().catch(e => console.warn('Gift info load failed:', e));
 
     if (isLoggedIn()) {

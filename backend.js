@@ -25,7 +25,7 @@ const GAME_REQUEST_TIMEOUT = 6000;
 app.use(cors({ origin: '*' }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('./')); // Serve static files
+// NOTE: express.static removed - static files served by Vercel CDN directly
 
 // ===================== HELPERS =====================
 function apiError(res, code, message) {
