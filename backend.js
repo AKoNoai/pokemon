@@ -28,6 +28,33 @@ app.use(express.urlencoded({ extended: true }));
 // NOTE: express.static removed - static files served by Vercel CDN directly
 
 // ===================== HELPERS =====================
+const sessionCookies = new Map();
+
+function mergeCookies(oldCookie, newCookieHeader) {
+    if (!newCookieHeader) return oldCookie;
+    const cookies = {};
+    if (oldCookie) {
+        oldCookie.split(';').forEach(c => {
+            const parts = c.split('=');
+            if (parts[0]) {
+                const k = parts[0].trim();
+                const v = parts.slice(1).join('=').trim();
+                if (k) cookies[k] = v;
+            }
+        });
+    }
+    const newCookies = Array.isArray(newCookieHeader) ? newCookieHeader : [newCookieHeader];
+    newCookies.forEach(c => {
+        const parts = c.split(';')[0].split('=');
+        if (parts[0]) {
+            const k = parts[0].trim();
+            const v = parts.slice(1).join('=').trim();
+            if (k) cookies[k] = v;
+        }
+    });
+    return Object.entries(cookies).map(([k, v]) => `${k}=${v}`).join('; ');
+}
+
 function apiError(res, code, message) {
     return res.json({ success: false, code, message });
 }
@@ -36,23 +63,36 @@ function apiOk(res, data) {
     return res.json({ success: true, data });
 }
 
-async function gameRequest(url, params) {
+async function gameRequest(url, params, cookieKey = null) {
     try {
+        const reqHeaders = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+            'Accept': 'application/json, text/plain, */*',
+            'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8',
+            'Referer': 'https://activity.pocketgamesol.com/',
+            'Origin': 'https://activity.pocketgamesol.com',
+            'Connection': 'keep-alive'
+        };
+
+        if (cookieKey && sessionCookies.has(cookieKey)) {
+            reqHeaders['Cookie'] = sessionCookies.get(cookieKey);
+        }
+
         const resp = await axios.get(url, {
             params,
             timeout: GAME_REQUEST_TIMEOUT,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-                'Accept': 'application/json, text/plain, */*',
-                'Accept-Language': 'vi,en-US;q=0.9,en;q=0.8',
-                'Referer': 'https://activity.pocketgamesol.com/',
-                'Origin': 'https://activity.pocketgamesol.com',
-                'Connection': 'keep-alive'
-            }
+            headers: reqHeaders
         });
         
         if (resp.data === undefined || resp.data === null || resp.data === '') {
             console.warn(`[gameRequest] Empty response from ${url}. Status: ${resp.status}. Headers:`, JSON.stringify(resp.headers));
+        }
+
+        const setCookieHeader = resp.headers['set-cookie'];
+        if (setCookieHeader && cookieKey) {
+            const merged = mergeCookies(sessionCookies.get(cookieKey), setCookieHeader);
+            sessionCookies.set(cookieKey, merged);
+            console.log(`[gameRequest] Saved cookie for ${cookieKey.substring(0, 8)}...`);
         }
         
         return resp.data;
@@ -117,12 +157,16 @@ app.post('/api/login', async (req, res) => {
             password: pwdMd5,
             version: 'v3',
             sign
-        });
+        }, userName);
         const gameCallMs = Date.now() - gameCallStart;
         console.log(`[login] Game API responded in ${gameCallMs}ms with code: ${result.code}`);
 
         if (result.code === 200) {
             console.log(`[login] SUCCESS in ${Date.now() - startTime}ms`);
+            const token = result.state.token;
+            if (sessionCookies.has(userName)) {
+                sessionCookies.set(token, sessionCookies.get(userName));
+            }
             return apiOk(res, result.state);
         } else if (result.code === 102) {
             console.log(`[login] Invalid credentials for ${userName}`);
@@ -153,9 +197,13 @@ app.post('/api/login/facebook', async (req, res) => {
             clientId: APP_ID,
             access_token: accessToken,
             sign
-        });
+        }, accessToken);
 
         if (result.code === 200) {
+            const token = result.state.token;
+            if (sessionCookies.has(accessToken)) {
+                sessionCookies.set(token, sessionCookies.get(accessToken));
+            }
             return apiOk(res, result.state);
         } else {
             return apiError(res, result.code, result.state || 'Đăng nhập Facebook thất bại');
@@ -179,7 +227,7 @@ app.get('/api/zones', async (req, res) => {
         const result = await gameRequest(GAME_API + '/user/sdk/zones', {
             appId: APP_ID,
             token
-        });
+        }, token);
 
         if (result.code === 200) {
             return apiOk(res, result.state || []);
@@ -208,7 +256,7 @@ app.get('/api/players', async (req, res) => {
             appId: APP_ID,
             gameZoneId,
             token
-        });
+        }, token);
 
         if (result.code === 200) {
             return apiOk(res, result.state || []);
@@ -242,8 +290,8 @@ app.post('/api/claim', async (req, res) => {
         let alreadyClaimedResult = null;
         let invalidResult = null;
 
-        // Probe offsets from -5 to +5 to cover different potential reward IDs
-        for (let i = 0; i <= 10; i++) {
+        // Probe offsets from -10 to +10 to cover different potential reward IDs (covers ef, f0, etc.)
+        for (let i = -10; i <= 10; i++) {
             const currentVal = suffixVal + i;
             const currentHex = currentVal.toString(16).padStart(6, '0');
             const probeId = prefix + currentHex;
@@ -253,8 +301,11 @@ app.post('/api/claim', async (req, res) => {
                     groupId: GROUP_ID,
                     actId: ACT_ID,
                     token,
-                    rewardId: probeId
-                });
+                    rewardId: probeId,
+                    gameZoneId: gameZoneId,
+                    playerId: playerId,
+                    roleId: playerId
+                }, token);
                 console.log(`[claim] Probed ID ${probeId} (offset ${i}) => Code: ${probeResult.code}, Response: ${JSON.stringify(probeResult)}`);
                 
                 if (probeResult.code === 200) {
@@ -359,7 +410,7 @@ app.get('/api/check', async (req, res) => {
             actId: ACT_ID,
             token,
             rewardId: undefined   // undefined → check status, không claim
-        });
+        }, token);
 
         console.log('[check] Game server response:', JSON.stringify(result));
 
