@@ -783,13 +783,13 @@ async function doSdkLogin() {
 
     showSpinner();
     let lastError = null;
-    const maxRetries = 3;
+    const maxRetries = 2;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
         try {
             console.log(`[doSdkLogin] Attempt ${attempt}/${maxRetries}`);
             document.getElementById('spinner-overlay').setAttribute('aria-label', `Đang đăng nhập (lần ${attempt})...`);
-            const r = await apiCall('/login', 'POST', { userName, password }, 35000);
+            const r = await apiCall('/login', 'POST', { userName, password }, 20000);
             hideSpinner();
             if (r.success) {
                 await afterLogin(r.data);

@@ -19,7 +19,7 @@ const GROUP_ID = '5f682ae8b5cb673c9ca740ed';
 const ACT_ID = '5f682ae8b5cb673c9ca740ee';
 const REWARD_ID = '5f682ae8b5cb673c9ca740f0';
 const GIFT_AMOUNT = 40; // Changed from 20 to 40
-const GAME_REQUEST_TIMEOUT = 9000;
+const GAME_REQUEST_TIMEOUT = 6000;
 
 // ===================== MIDDLEWARE =====================
 app.use(cors({ origin: '*' }));
